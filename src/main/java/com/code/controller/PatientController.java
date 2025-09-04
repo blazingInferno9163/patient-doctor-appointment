@@ -1,21 +1,29 @@
 package com.code.controller;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.code.entity.Patient;
@@ -42,6 +50,19 @@ public class PatientController {
 		return patient;
 	 
 	}
+
+//	// GET /papi/patients?name=ashu&page=0&size=10
+//	    @GetMapping(value = "/patients", params = "name")
+//	    public ResponseEntity<Page<Patient>> getPatientsByName(
+//	            @RequestParam String name,
+//	            @RequestParam(defaultValue = "0") int page,
+//	            @RequestParam(defaultValue = "10") int size) {
+//
+//	        Pageable pageable = PageRequest.of(page, size);
+//	        Page<Patient> patients = patientService.findPatientsByName(name, pageable);
+//	        return ResponseEntity.ok(patients);
+//	    }
+
 	
 	@PostMapping("/patient")
 	public ResponseEntity savePatient(@RequestBody Patient patient) {
@@ -53,6 +74,14 @@ public class PatientController {
 		 
 		
 	}
+	
+
+	 // PATCH /papi/patients/{id}
+	@PatchMapping("/patient/{id}")
+	public ResponseEntity<Patient> patchPatient(@PathVariable Long id, @RequestBody Map<String, Object> updates) throws ResourceNotFoundException {
+	    return patientService.patchPatients(id, updates);
+	}
+
 	@PutMapping("/patient/{id}")
 	public ResponseEntity<Patient>updatePatient(@PathVariable Long id,@RequestBody Patient patient) throws ResourceNotFoundException{
 		return patientService.updatePatient(id,patient);
@@ -61,5 +90,14 @@ public class PatientController {
 	public Map<String, Boolean> deletePatient(@PathVariable Long id){
 		return patientService.deletePatient(id);
 	}
+
+@GetMapping("/papi/patients")
+    public Page<Patient> getPatients(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return patientService.getPatientsByName(name, page, size);
+    }
+
 }	
 
