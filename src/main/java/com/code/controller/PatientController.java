@@ -2,12 +2,12 @@ package com.code.controller;
 
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,13 +91,31 @@ public class PatientController {
 		return patientService.deletePatient(id);
 	}
 
-@GetMapping("/papi/patients")
-    public Page<Patient> getPatients(
-            @RequestParam String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return patientService.getPatientsByName(name, page, size);
-    }
+//@GetMapping("/papi/patients")
+//    public List<Patient> getPatients(
+//            @RequestParam String name,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        return patientService.getPatientsByName(name, page, size);
+//    }
+
+//	@GetMapping("/search")
+//	public Page<Patient> getPatients(
+//	        @RequestParam String name,
+//	        @RequestParam(defaultValue = "0") int page,
+//	        @RequestParam(defaultValue = "10") int size) {
+//	    return patientService.getPatientsByName(name, page, size);
+//	}
+	
+	@GetMapping(value = "/search", params = {"name", "page", "size"})
+	public ResponseEntity<List<Patient>> getPatientsByNameAndAge(
+	        @RequestParam String name,
+	        @RequestParam int page, // interpreted as age
+	        @RequestParam int size) {
+
+	    List<Patient> patients = patientService.findPatientsByNameAndAge(name, page, size);
+	    return ResponseEntity.ok(patients);
+	}
 
 }	
 

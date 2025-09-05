@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -77,9 +78,30 @@ public class PatientService implements IPatientService {
 	    return ResponseEntity.ok(patient);
 	}
 
-	 public Page<Patient> getPatientsByName(String name, int page, int size) {
-	        return patientRepo.findByFullNameContainingIgnoreCase(name, PageRequest.of(page, size));
-	    }
+//	 public List<Patient> getPatientsByName(String name, int page, int size) {
+//	        return patientRepo.findByFullName(name);
+//	    }
+
+//public Page<Patient> getPatientsByName(String name, int page, int size) {
+//    Pageable pageable = PageRequest.of(page, size);
+//    return patientRepo.findByFullNameContainingIgnoreCase(name, pageable);
+//}
+	
+	@Override
+	public List<Patient> findPatientsByNameAndAge(String name, int age, int size) {
+	    List<Patient> allMatchingPatients = patientRepo.findByFullNameContainingIgnoreCase(name);
+
+	    return allMatchingPatients.stream()
+	            .filter(patient -> {
+	                LocalDate dob = patient.getDob();
+	                if (dob == null) return false;
+	                int calculatedAge = LocalDate.now().getYear() - dob.getYear();
+	                return calculatedAge == age;
+	            })
+	            .limit(size)
+	            .toList();
+	}
+
 
 	
 	public Map<String, Boolean> deletePatient (Long patientId){
